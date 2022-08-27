@@ -30,6 +30,9 @@ public struct CodeView: RepresentableView {
   var fontSize: Int
   var showInvisibleCharacters: Bool
   var lineWrapping: Bool
+	var readOnly: Bool
+	var showBackground: Bool
+	var hideLineNumbers: Bool
   
   var onLoadSuccess: (() -> ())?
   var onLoadFail: ((Error) -> ())?
@@ -41,13 +44,21 @@ public struct CodeView: RepresentableView {
               mode: Mode,
               fontSize: Int = 12,
               showInvisibleCharacters: Bool = true,
-              lineWrapping: Bool = true) {
+              lineWrapping: Bool = true,
+							readOnly: Bool = false,
+							showBackground: Bool = true,
+							hideLineNumbers: Bool = false
+							
+	) {
     self._code = code
     self.mode = mode
     self.theme = theme
     self.fontSize = fontSize
     self.showInvisibleCharacters = showInvisibleCharacters
     self.lineWrapping = lineWrapping
+		self.readOnly = readOnly
+		self.showBackground = showBackground
+		self.hideLineNumbers = hideLineNumbers
   }
   
   
@@ -126,12 +137,16 @@ extension CodeView {
     
     let webView = WKWebView(frame: .zero, configuration: configuration)
     webView.navigationDelegate = context.coordinator
-    #if os(OSX)
-    webView.setValue(true, forKey: "drawsTransparentBackground")
-    webView.allowsMagnification = false
-    #elseif os(iOS)
-    webView.isOpaque = false
-    #endif
+#if os(OSX)
+		webView.setValue(true, forKey: "drawsTransparentBackground")
+		webView.setValue(false, forKey: "drawsBackground")
+		if #available(macOS 12.0, *) {
+			webView.underPageBackgroundColor = .clear
+		}
+		webView.allowsMagnification = false
+#elseif os(iOS)
+		webView.isOpaque = false
+#endif
     
     let codeMirrorBundle = try! Bundle.codeMirrorBundle()
     guard let indexPath = codeMirrorBundle.path(forResource: "index", ofType: "html") else {
@@ -143,14 +158,23 @@ extension CodeView {
     webView.load(data, mimeType: "text/html", characterEncodingName: "utf-8", baseURL: codeMirrorBundle.resourceURL!)
 
     context.coordinator.setWebView(webView)
-    context.coordinator.setThemeName(theme.rawValue)
+		if showBackground {
+			context.coordinator.setThemeName(self.theme.rawValue)
+		} else {
+				context.coordinator.setThemeWithTransparentBackground(self.theme.rawValue)
+		}
     
     context.coordinator.setMimeType(mode.mimeType)
     context.coordinator.setContent(code)
     context.coordinator.setFontSize(fontSize)
     context.coordinator.setShowInvisibleCharacters(showInvisibleCharacters)
     context.coordinator.setLineWrapping(lineWrapping)
-    
+		context.coordinator.setReadonly(readOnly)
+		
+		if self.hideLineNumbers {
+			context.coordinator.hideLineNumbers()
+		}
+		
     return webView
   }
   
@@ -159,10 +183,19 @@ extension CodeView {
     
     updateWhatsNecessary(elementGetter: context.coordinator.getContent(_:), elementSetter: context.coordinator.setContent(_:), currentElementState: self.code)
     
-    context.coordinator.setThemeName(self.theme.rawValue)
+		if showBackground {
+			context.coordinator.setThemeName(self.theme.rawValue)
+		} else {
+			context.coordinator.setThemeWithTransparentBackground(self.theme.rawValue)
+		}
+		
     context.coordinator.setFontSize(fontSize)
     context.coordinator.setShowInvisibleCharacters(showInvisibleCharacters)
     context.coordinator.setLineWrapping(lineWrapping)
+		
+		if self.hideLineNumbers {
+			context.coordinator.hideLineNumbers()
+		}
   }
   
   func updateWhatsNecessary(elementGetter: (JavascriptCallback?) -> Void,

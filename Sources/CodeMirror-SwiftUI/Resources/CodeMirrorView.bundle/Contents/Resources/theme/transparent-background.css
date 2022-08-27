@@ -1,0 +1,10 @@
+.cm-s-transparent-background {
+	background: transparent !important;
+}
+
+.cm-s-transparent-background .CodeMirror-gutters {
+	box-shadow: 0px 0 0px 0 rgba(0, 0, 0, 0) !important;
+	-webkit-box-shadow: 0px 0 0px 0 rgba(0, 0, 0, 0) !important;
+	background-color: transparent !important;
+	border: none !important;
+}

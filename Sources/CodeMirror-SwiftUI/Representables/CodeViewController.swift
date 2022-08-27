@@ -151,6 +151,10 @@ extension CodeViewController {
       callJavascript(javascriptString: script)
     }
   }
+	
+	func hideLineNumbers() {
+		callJavascript(javascriptString: "hideLineNumbers();")
+	}
   
   func getContent(_ block: JavascriptCallback?) {
     callJavascript(javascriptString: "GetContent();", callback: block)
@@ -167,6 +171,10 @@ extension CodeViewController {
   func setThemeName(_ value: String) {
     callJavascript(javascriptString: "SetTheme(\"\(value)\");")
   }
+	
+	func setThemeWithTransparentBackground(_ value: String) {
+		setThemeName("transparent-background  \(value)")
+	}
   
   func setLineWrapping(_ value: Bool) {
     callJavascript(javascriptString: "SetLineWrapping(\(value));")
@@ -185,7 +193,11 @@ extension CodeViewController {
   }
   
   func setReadonly(_ value: Bool) {
-    callJavascript(javascriptString: "SetReadOnly(\(value));")
+		if value {
+			callJavascript(javascriptString: "SetReadOnly(\"nocursor\");")
+		} else {
+			callJavascript(javascriptString: "SetReadOnly(false);")
+		}
   }
   
   func getTextSelection(_ block: JavascriptCallback?) {

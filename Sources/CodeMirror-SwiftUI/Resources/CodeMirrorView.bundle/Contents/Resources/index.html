@@ -38,6 +38,8 @@
     <script src="addons/hint/sql-hint.js"></script>
     <script src="addons/hint/xml-hint.js"></script>
 
+		<link rel="stylesheet" href="theme/transparent-background.css"/>
+		
     <link rel="stylesheet" href="theme/bbedit.css"/>
     <link rel="stylesheet" href="theme/all-hallow-eve.css"/>
     <link rel="stylesheet" href="theme/idlefingers.css"/>
@@ -318,6 +320,10 @@
           var content = GetContent();
           window.webkit.messageHandlers.codeMirrorTextContentDidChange.postMessage(content);
       });
+			
+			function hideLineNumbers() {
+				editor.setOption( "lineNumbers", false );
+			}
     
       function getStringFromHex(content) {
         return decodeURIComponent(content.replace(/\s+/g, '').replace(/[0-9a-f]{2}/g, '%$&'));
@@ -374,7 +380,7 @@
 
       function GetTabSize() {
         return editor.getOption("tabSize");
-      }
+	  }
 
       function SetTabInsertSpaces(flag) {
         // See http://codemirror.net/doc/manual.html#keymaps
