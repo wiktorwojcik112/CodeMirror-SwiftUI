@@ -26,11 +26,8 @@ let package = Package(
     ),
     .testTarget(
       name: "CodeMirror-SwiftUITests",
-      dependencies: ["CodeMirror-SwiftUI"],
-      resources: [
-        .process("Resources")
-      ]
-    ),
+      dependencies: ["CodeMirror-SwiftUI"]
+    )
   ],
   swiftLanguageVersions: [.v5]
 )

@@ -83,7 +83,6 @@ public class CodeViewController: NSObject {
 extension CodeViewController: WKScriptMessageHandler {
   
   public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-    print("didFinish")
     parent.onLoadSuccess?()
   }
   
