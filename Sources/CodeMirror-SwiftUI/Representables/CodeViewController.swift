@@ -194,8 +194,6 @@ extension CodeViewController {
   func setReadonly(_ value: Bool) {
 		if value {
 			callJavascript(javascriptString: "SetReadOnly(\"nocursor\");")
-		} else {
-			callJavascript(javascriptString: "SetReadOnly(false);")
 		}
   }
   
